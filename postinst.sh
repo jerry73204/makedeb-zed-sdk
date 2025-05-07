@@ -1,4 +1,5 @@
 #!/bin/sh
+arch=$(dpkg --print-architecture)
 
 # Run ldconfig to update the library cache
 ldconfig
@@ -10,10 +11,12 @@ udevadm control --reload-rules && udevadm trigger
 # getent group zed || groupadd zed
 
 # Enable and start zed_media_server_cli.service
-if command -v systemctl >/dev/null && systemctl list-units >/dev/null 2>&1; then
-    systemctl daemon-reload
-    systemctl enable zed_media_server_cli.service
-    systemctl restart zed_media_server_cli.service
+if [ "$arch" = "arm64" ]; then
+    if command -v systemctl >/dev/null && systemctl list-units >/dev/null 2>&1; then
+	systemctl daemon-reload
+	systemctl enable zed_media_server_cli.service
+	systemctl restart zed_media_server_cli.service
+    fi
 fi
 
 echo "ZED SDK installation complete. To use the SDK, add your user to the video and zed groups with:"

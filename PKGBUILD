@@ -48,6 +48,7 @@ postinst='postinst.sh'
 prerm='prerm.sh'
 postrm='postrm.sh'
 
+CARCH=$(dpkg --print-architecture)
 
 if [ "${CARCH}" = "amd64" ]; then
     run_file="ZED_SDK_Ubuntu22_cuda12_v${pkgver}.run"
@@ -59,7 +60,7 @@ fi
 
 source_amd64=(
     "${run_file}::https://download.stereolabs.com/zedsdk/${pkgver}/cu12/ubuntu22"
-    "${whl_file}::pyzed-${pkgver}-cp310-cp310-linux_x86_64.whl::https://stereolabs.sfo2.digitaloceanspaces.com/zedsdk/${pkgver}/whl/linux_x86_64/pyzed-${pkgver}-cp310-cp310-linux_x86_64.whl"
+    "${whl_file}::https://stereolabs.sfo2.digitaloceanspaces.com/zedsdk/${pkgver}/whl/linux_x86_64/pyzed-${pkgver}-cp310-cp310-linux_x86_64.whl"
     "python_shebang.patch"
     "zed_download_ai_models"
 )
@@ -75,7 +76,7 @@ noextract=(
 )
 
 sha256sums_amd64=(
-    'dbd2636c5e998b9b1fb1e8c3aafa0209df3fed88ab2199307226571412cc62a2'
+    'c03f3e0a91512182a42a52e77d9b7ad76a044e3899b55b267c334cd6effe5844'
     '13cd739ea3510bc15a1fcf3fc22fcd485df42c95453eaff0a9658b6cd1b5293a'
     '1eed77b1cb24af3e58ecffde7a6bd1524215efeb9bafdc9364a2add2bc911fcd'
     'f4bff6ceb6de242615ddb2c305d70b35f7935adee4bbdda1d5d980a960efa09b'
@@ -151,13 +152,15 @@ package() {
   install -Dm644 "zed.conf" "${pkgdir}/etc/ld.so.conf.d/zed.conf"
 
   # Install ZEDMediaServer service
-  install -Dm644 "zed_media_server_cli.service" "${pkgdir}/etc/systemd/system/zed_media_server_cli.service"
+  if [ "${CARCH}" = "arm64" ]; then
+      install -Dm644 "zed_media_server_cli.service" "${pkgdir}/etc/systemd/system/zed_media_server_cli.service"
+  fi
 
   # Create the doc directory
   cp -a -t "${pkgdir}/usr/local/zed" doc
 
   # Install the wheel into the package directory
   PYTHONUSERBASE="$pkgdir/usr" \
-		python -m pip install --no-deps --root="${pkgdir}" --prefix=/usr --ignore-installed \
+		python3 -m pip install --no-deps --root="${pkgdir}" --prefix=/usr --ignore-installed \
 		"${srcdir}/${whl_file}"
 }
