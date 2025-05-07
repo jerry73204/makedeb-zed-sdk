@@ -6,7 +6,23 @@ pkgdesc="StereoLabs ZED SDK"
 arch=('amd64' 'arm64')
 url="https://www.stereolabs.com/developers/release/"
 license=('custom')
-depends=(
+depends_x86_64=(
+  'libjpeg-turbo8'
+  'libturbojpeg'
+  'libusb-1.0-0'
+  'libusb-1.0-0-dev'
+  'libopenblas-dev'
+  'libarchive-dev'
+  'libv4l-0'
+  'curl'
+  'unzip'
+  'zlib1g'
+  'mesa-utils'
+  'python3-numpy'
+  'python3-requests'
+  'python3-pyqt5'
+)
+depends_aarch64=(
   'nvidia-l4t-camera'
   'libjpeg-turbo8'
   'libturbojpeg'
