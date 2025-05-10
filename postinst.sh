@@ -20,6 +20,12 @@ if [ "$arch" = "arm64" ]; then
 	systemctl enable zed_media_server_cli.service
 	systemctl restart zed_media_server_cli.service
     fi
+
+    # Display warning about libv4l-dev
+    echo ""
+    echo "⚠️  WARNING: Installing the 'libv4l-dev' package on Jetson devices will break hardware"
+    echo "   encoding/decoding support. This package has been configured to conflict with libv4l-dev."
+    echo ""
 fi
 
 echo "ZED SDK installation complete. To use the SDK, add your user to the video group with:"

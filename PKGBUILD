@@ -49,6 +49,9 @@ depends_aarch64=(
   'nvidia-l4t-camera'
 )
 
+conflicts_x86_64=()
+conflicts_aarch64=('libv4l-dev')
+
 if [[ "$_arch" == "arm64" && -f /etc/nv_tegra_release ]]; then
   depends_aarch64+=(${_jetson_depends[@]})
 fi
