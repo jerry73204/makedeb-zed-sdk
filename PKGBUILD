@@ -6,7 +6,10 @@ pkgdesc="StereoLabs ZED SDK"
 arch=('amd64' 'arm64')
 url="https://www.stereolabs.com/developers/release/"
 license=('custom')
-depends_x86_64=(
+
+_arch="$(dpkg --print-architecture)"
+
+_common_depends=(
   'libjpeg-turbo8'
   'libturbojpeg'
   'libusb-1.0-0'
@@ -18,30 +21,45 @@ depends_x86_64=(
   'unzip'
   'zlib1g'
   'mesa-utils'
+  # dev
+  'libpng-dev'
+  #
+  'qtbase5-dev'
+  'qtchooser'
+  'qt5-qmake'
+  'qtbase5-dev-tools'
+  'libqt5opengl5'
+  'libqt5svg5'
+  # samples
+  'libglew-dev'
+  'freeglut3-dev'
+  # python
   'python3-numpy'
   'python3-requests'
   'python3-pyqt5'
+)
+_jetson_depends=(
+  'nvidia-l4t-camera'
+)
+depends_x86_64=(
+  ${_common_depends[@]}
 )
 depends_aarch64=(
+  x${_common_depends[@]}
   'nvidia-l4t-camera'
-  'libjpeg-turbo8'
-  'libturbojpeg'
-  'libusb-1.0-0'
-  'libusb-1.0-0-dev'
-  'libopenblas-dev'
-  'libarchive-dev'
-  'libv4l-0'
-  'curl'
-  'unzip'
-  'zlib1g'
-  'mesa-utils'
-  'python3-numpy'
-  'python3-requests'
-  'python3-pyqt5'
 )
+
+if [[ "$_arch" == "arm64" && -f /etc/nv_tegra_release ]]; then
+  depends_aarch64+=(${_jetson_depends[@]})
+fi
+
 makedepends=(
   'zstd'
   'tar'
+  # python
+  'python3-dev'
+  'python3-pip'
+  'python3-setuptools'
 )
 options=('!strip')
 postinst='postinst.sh'
