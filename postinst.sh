@@ -7,20 +7,23 @@ ldconfig
 # Trigger udev rules
 udevadm control --reload-rules && udevadm trigger
 
-# Create a zed group for USB access
-# getent group zed || groupadd zed
-
-# Enable and start zed_media_server_cli.service
+# Enable and start zed_media_server_cli.service and modify argus daemon on Jetson
 if [ "$arch" = "arm64" ]; then
     if command -v systemctl >/dev/null && systemctl list-units >/dev/null 2>&1; then
+        # Modify argus daemon to avoid timeout when using multiple cameras
+        if [ -f "/etc/systemd/system/nvargus-daemon.service" ]; then
+            sed -i '/^\[Service\]$/ a Environment="enableCamInfiniteTimeout=1"' /etc/systemd/system/nvargus-daemon.service
+            systemctl daemon-reload
+        fi
+
 	systemctl daemon-reload
 	systemctl enable zed_media_server_cli.service
 	systemctl restart zed_media_server_cli.service
     fi
 fi
 
-echo "ZED SDK installation complete. To use the SDK, add your user to the video and zed groups with:"
-echo "  sudo usermod -a -G video,zed $(whoami)"
+echo "ZED SDK installation complete. To use the SDK, add your user to the video group with:"
+echo "  sudo usermod -a -G video $(whoami)"
 echo "and then log out and back in."
 echo ''
 echo "To download all AI models and optimize them,"
